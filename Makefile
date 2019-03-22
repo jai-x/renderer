@@ -8,3 +8,5 @@ $(EXE): main.c
 
 clean:
 	$(RM) $(EXE)
+	$(RM) *.ppm
+
