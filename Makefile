@@ -1,10 +1,12 @@
 EXE = renderer
+LIBS = -lm
 CFLAGS = -std=c99 -Wall -Wextra -Werror -pedantic -pedantic-errors
 
-all: $(EXE)
+SRCS = $(wildcard *.c)
+HDRS = $(wildcard *.h)
 
-$(EXE): main.c
-	$(CC) $(CFLAGS) main.c -o $(EXE)
+$(EXE): $(SRCS) $(HDRS)
+	$(CC) $(CFLAGS) $(LIBS) $(SRCS) -o $(EXE)
 
 clean:
 	$(RM) $(EXE)
