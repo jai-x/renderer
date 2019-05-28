@@ -3,11 +3,10 @@
 
 #include "buffer.h"
 
-
 int
 main(void)
 {
-	buffer img = buffer_new(1000, 1000);
+	buffer* img = buffer_alloc(1000, 1000);
 
 	color blue   = {  0,   0, 255};
 	color green  = {  0, 255,   0};
