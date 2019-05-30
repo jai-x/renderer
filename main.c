@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "buffer.h"
+#include "model.h"
 
 int
 main(void)

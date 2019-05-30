@@ -98,3 +98,9 @@ buffer_line(buffer* b, int x1, int y1, int x2, int y2, color c)
 		transpose ? buffer_put_color(b, y, x, c) : buffer_put_color(b, x, y, c);
 	};
 }
+
+void
+buffer_print(buffer* b)
+{
+	printf("w: %d, h: %d\n", b->w, b->h);
+}

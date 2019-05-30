@@ -11,4 +11,3 @@ $(EXE): $(SRCS) $(HDRS)
 clean:
 	$(RM) $(EXE)
 	$(RM) *.ppm
-
