@@ -4,34 +4,43 @@
 #include "buffer.h"
 #include "model.h"
 
+#define IMG_X 1000
+#define IMG_Y 1000
+
 int
 main(void)
 {
-	buffer* img = buffer_alloc(1000, 1000);
+	model* teapot = model_alloc("teapot.obj");
+	buffer* img = buffer_alloc(IMG_X, IMG_Y);
 
-	color blue   = {  0,   0, 255};
-	color green  = {  0, 255,   0};
-	color red    = {255,   0,   0};
-	color yellow = {255, 255,   0};
-	color white  = {255, 255, 255};
+	color white   = {255, 255, 255};
+	vec3f img_min = {0, 0, 0};
+	vec3f img_max = {IMG_X, IMG_Y, 0};
 
-	buffer_line(img, 499, 0, 499, 999, blue);
-	buffer_line(img, 0, 499, 999, 499, blue);
+	for (int i = 0; i < teapot->num_faces; i++) {
+		// fetch face
+		face f = teapot->faces[i];
 
-	buffer_line(img, 0, 0, 999, 499, red);
-	buffer_line(img, 999, 599, 0, 99, green);
+		// fetch coordinates of each vertex of the face triangle
+		vec3f v0 = teapot->verts[f.v0 - 1];
+		vec3f v1 = teapot->verts[f.v1 - 1];
+		vec3f v2 = teapot->verts[f.v2 - 1];
 
-	buffer_line(img, 0, 499, 999, 0, yellow);
-	buffer_line(img, 999, 99, 0, 599, white);
+		// scale the coordinates to the size of the buffer
+		v0 = model_scale_coords(teapot, img_min, img_max, v0);
+		v1 = model_scale_coords(teapot, img_min, img_max, v1);
+		v2 = model_scale_coords(teapot, img_min, img_max, v2);
 
-	buffer_line(img, 0, 0, 499, 999, red);
-	buffer_line(img, 599, 999, 99, 0, green);
+		// draw the lines of the triangle
+		buffer_line(img, v0.x, v0.y, v1.x, v1.y, white);
+		buffer_line(img, v1.x, v1.y, v2.x, v2.y, white);
+		buffer_line(img, v2.x, v2.y, v0.x, v0.y, white);
+	}
 
-	buffer_line(img, 499, 999, 999, 0, yellow);
-	buffer_line(img, 899, 0, 399, 999, white);
-
+	model_print(teapot);
 	buffer_write(img, "output.ppm");
 	buffer_free(img);
+	model_free(teapot);
 
 	return EXIT_SUCCESS;
 }

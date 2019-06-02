@@ -59,10 +59,8 @@ buffer_write(buffer* b, const char* filename)
 void
 buffer_put_color(buffer* b, int x, int y, color p)
 {
-	if (x >= b->w || y >= b->h) {
-		fprintf(stderr,
-			    "Buffer OOB access: x: %d, y: %d, w: %d, h: %d",
-			    x, y, b->w, b->h);
+	if (x >= b->w || x < 0 || y >= b->h || y < 0) {
+		printf("Buffer OOB access: x: %d, y: %d, w: %d, h: %d\n", x, y, b->w, b->h);
 		return;
 	}
 
@@ -70,9 +68,9 @@ buffer_put_color(buffer* b, int x, int y, color p)
 }
 
 
-// Some sort of attempt at implementing Bresenham's line algorithm.
-// Can't quite figure out how to do this without floats so it's kinda slow.
-// Also don't want to aimlessly copy a solution so stuck with this for now.
+// Bresenham's line algorithm.
+// I couldn't find a way to derive a non-buggy version myself so I just copied
+// an implementation I knew was working from ssloy/tinyrenderer.
 void
 buffer_line(buffer* b, int x1, int y1, int x2, int y2, color c)
 {
@@ -89,13 +87,23 @@ buffer_line(buffer* b, int x1, int y1, int x2, int y2, color c)
 		int_swap(&y1, &y2);
 	}
 
-	float dy = y2 - y1;
-	float dx = x2 - x1;
-	float m = dy/dx;
+	int dy = y2 - y1;
+	int dx = x2 - x1;
+
+	int derr = abs(dy) * 2;
+
+	int y = y1;
+	int err = 0;
 
 	for (int x = x1; x <= x2; x++) {
-		int y = lroundf((x * m) + y1);
 		transpose ? buffer_put_color(b, y, x, c) : buffer_put_color(b, x, y, c);
+
+		err += derr;
+
+		if (err > dx) {
+			y += (y2 > y1) ? 1 : -1;
+			err -= dx * 2;
+		}
 	};
 }
 

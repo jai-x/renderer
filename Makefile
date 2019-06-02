@@ -1,6 +1,6 @@
 EXE = renderer
 LIBS = -lm
-CFLAGS = -std=c99 -Wall -Wextra -Werror -pedantic -pedantic-errors
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -pedantic-errors
 
 SRCS = $(wildcard *.c)
 HDRS = $(wildcard *.h)
