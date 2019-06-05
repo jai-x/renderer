@@ -3,6 +3,7 @@
 
 #include "buffer.h"
 #include "model.h"
+#include "vec3f.h"
 
 #define IMG_X 1000
 #define IMG_Y 1000
@@ -27,9 +28,9 @@ main(void)
 		vec3f v2 = teapot->verts[f.v2 - 1];
 
 		// scale the coordinates to the size of the buffer
-		v0 = model_scale_coords(teapot, img_min, img_max, v0);
-		v1 = model_scale_coords(teapot, img_min, img_max, v1);
-		v2 = model_scale_coords(teapot, img_min, img_max, v2);
+		v0 = vec3f_scale(teapot->min, teapot->max, img_min, img_max, v0);
+		v1 = vec3f_scale(teapot->min, teapot->max, img_min, img_max, v1);
+		v2 = vec3f_scale(teapot->min, teapot->max, img_min, img_max, v2);
 
 		// draw the lines of the triangle
 		buffer_line(img, v0.x, v0.y, v1.x, v1.y, white);

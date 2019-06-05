@@ -39,6 +39,12 @@ buffer_free(buffer* b)
 }
 
 void
+buffer_print(buffer* b)
+{
+	printf("w: %d, h: %d\n", b->w, b->h);
+}
+
+void
 buffer_write(buffer* b, const char* filename)
 {
 	FILE* out = fopen(filename, "w+");
@@ -107,8 +113,3 @@ buffer_line(buffer* b, int x1, int y1, int x2, int y2, color c)
 	};
 }
 
-void
-buffer_print(buffer* b)
-{
-	printf("w: %d, h: %d\n", b->w, b->h);
-}
