@@ -1,10 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "vec3f.h"
-
-#define MAX(A, B) ((A) > (B) ? (A) : (B))
-#define MIN(A, B) ((A) < (B) ? (A) : (B))
 
 void
 vec3f_print(vec3f v) {
@@ -27,9 +25,9 @@ vec3f
 vec3f_min_values(vec3f a, vec3f b)
 {
 	vec3f out;
-	out.x = MIN(a.x, b.x);
-	out.y = MIN(a.y, b.y);
-	out.z = MIN(a.z, b.z);
+	out.x = fminf(a.x, b.x);
+	out.y = fminf(a.y, b.y);
+	out.z = fminf(a.z, b.z);
 	return out;
 }
 
@@ -37,9 +35,9 @@ vec3f
 vec3f_max_values(vec3f a, vec3f b)
 {
 	vec3f out;
-	out.x = MAX(a.x, b.x);
-	out.y = MAX(a.y, b.y);
-	out.z = MAX(a.z, b.z);
+	out.x = fmaxf(a.x, b.x);
+	out.y = fmaxf(a.y, b.y);
+	out.z = fmaxf(a.z, b.z);
 	return out;
 }
 
