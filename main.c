@@ -32,10 +32,8 @@ main(void)
 		v1 = vec3f_scale(teapot->min, teapot->max, img_min, img_max, v1);
 		v2 = vec3f_scale(teapot->min, teapot->max, img_min, img_max, v2);
 
-		// draw the lines of the triangle
-		buffer_line(img, v0.x, v0.y, v1.x, v1.y, white);
-		buffer_line(img, v1.x, v1.y, v2.x, v2.y, white);
-		buffer_line(img, v2.x, v2.y, v0.x, v0.y, white);
+		// draw the triangle
+		buffer_triangle(img, v0, v1, v2, white);
 	}
 
 	model_print(teapot);

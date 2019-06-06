@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "buffer.h"
+#include "vec3f.h"
 
 static void
 int_swap(int* a, int* b)
@@ -113,3 +114,10 @@ buffer_line(buffer* b, int x1, int y1, int x2, int y2, color c)
 	};
 }
 
+void
+buffer_triangle(buffer* b, vec3f v0, vec3f v1, vec3f v2, color c)
+{
+	buffer_line(b, v0.x, v0.y, v1.x, v1.y, c);
+	buffer_line(b, v1.x, v1.y, v2.x, v2.y, c);
+	buffer_line(b, v2.x, v2.y, v0.x, v0.y, c);
+}
