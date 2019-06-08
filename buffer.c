@@ -5,6 +5,7 @@
 
 #include "buffer.h"
 #include "vec3f.h"
+#include "vec2i.h"
 
 static void
 int_swap(int* a, int* b)
@@ -114,10 +115,60 @@ buffer_line(buffer* b, int x1, int y1, int x2, int y2, color c)
 	};
 }
 
-void
-buffer_triangle(buffer* b, vec3f v0, vec3f v1, vec3f v2, color c)
+// Find barycentric coordinates of point `p` with respect to triangle
+// represented by points `a`, `b`, and `c`
+static vec3f
+barycentric(vec2i a, vec2i b, vec2i c, vec2i p)
 {
-	buffer_line(b, v0.x, v0.y, v1.x, v1.y, c);
-	buffer_line(b, v1.x, v1.y, v2.x, v2.y, c);
-	buffer_line(b, v2.x, v2.y, v0.x, v0.y, c);
+	vec3f out = {0, 0, 0};
+
+	// x and y of vectors A->C, A->B, and A->P
+	vec3f ux = {c.x - a.x, b.x - a.x, a.x - p.x};
+	vec3f uy = {c.y - a.y, b.y - a.y, a.y - p.y};
+
+	vec3f u = vec3f_cross_product(ux, uy);
+
+	// check for degenerate triangle
+	if (fabsf(u.z) < 1) {
+		out.x = -1; // set coordinate outside triangle
+		return out;
+	}
+
+	out.x = 1.0f - ((u.x + u.y) / u.z);
+	out.y = u.y / u.z;
+	out.z = u.x / u.z;
+	return out;
+}
+
+void
+buffer_triangle(buffer* b, vec2i v0, vec2i v1, vec2i v2, color c)
+{
+	// bounding box minimum coordinates
+	vec2i box_min = {b->w - 1, b->h - 1};
+	box_min = vec2i_min_values(box_min, v0);
+	box_min = vec2i_min_values(box_min, v1);
+	box_min = vec2i_min_values(box_min, v2);
+
+	// bounding box maximum coordinates
+	vec2i box_max = {0, 0};
+	box_max = vec2i_max_values(box_max, v0);
+	box_max = vec2i_max_values(box_max, v1);
+	box_max = vec2i_max_values(box_max, v2);
+
+	// point in buffer to check
+	vec2i p;
+
+	for (p.x = box_min.x; p.x < box_max.x; p.x++) {
+		for (p.y = box_min.y; p.y < box_max.y; p.y++) {
+			// find barycentric coordinates of point p with respect to the given triangle vertices
+			vec3f bc = barycentric(v0, v1, v2, p);
+
+			// coordinates less than zero fall outside the triangle and are skipped
+			if (bc.x < 0 || bc.y < 0 || bc.z < 0) {
+				continue;
+			}
+
+			buffer_put_color(b, p.x, p.y, c);
+		}
+	}
 }

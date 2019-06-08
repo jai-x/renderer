@@ -58,3 +58,13 @@ vec3f_scale(vec3f old_min, vec3f old_max, vec3f new_min, vec3f new_max, vec3f va
 	out.z = scale(old_min.z, old_max.z, new_min.z, new_max.z, val.z);
 	return out;
 }
+
+vec3f
+vec3f_cross_product(vec3f a, vec3f b)
+{
+	vec3f out;
+	out.x = (a.y * b.z) - (a.z * b.y);
+	out.y = (a.z * b.x) - (a.x * b.z);
+	out.z = (a.x * b.y) - (a.y * b.x);
+	return out;
+}

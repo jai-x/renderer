@@ -19,4 +19,3 @@ face_from_line(const char* line)
 	out.v2 = strtol(end, NULL, 10);
 	return out;
 }
-

@@ -7,3 +7,4 @@ vec3f vec3f_from_line(const char* line);
 vec3f vec3f_min_values(vec3f a, vec3f b);
 vec3f vec3f_max_values(vec3f a, vec3f b);
 vec3f vec3f_scale(vec3f old_min, vec3f old_max, vec3f new_min, vec3f new_max, vec3f val);
+vec3f vec3f_cross_product(vec3f a, vec3f b);

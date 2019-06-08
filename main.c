@@ -8,15 +8,14 @@
 #define IMG_X 1000
 #define IMG_Y 1000
 
+static const vec3f img_min = {0, 0, 0};
+static const vec3f img_max = {IMG_X, IMG_Y, 0};
+
 int
 main(void)
 {
 	model* teapot = model_alloc("teapot.obj");
 	buffer* img = buffer_alloc(IMG_X, IMG_Y);
-
-	color white   = {255, 255, 255};
-	vec3f img_min = {0, 0, 0};
-	vec3f img_max = {IMG_X, IMG_Y, 0};
 
 	for (int i = 0; i < teapot->num_faces; i++) {
 		// fetch face
@@ -32,8 +31,16 @@ main(void)
 		v1 = vec3f_scale(teapot->min, teapot->max, img_min, img_max, v1);
 		v2 = vec3f_scale(teapot->min, teapot->max, img_min, img_max, v2);
 
+		// use only the x and y components as integers
+		vec2i t0 = {v0.x, v0.y};
+		vec2i t1 = {v1.x, v1.y};
+		vec2i t2 = {v2.x, v2.y};
+
+		// generate a random color for this face
+		color rand_color = {rand() % 255, rand() % 255, rand() % 255};
+
 		// draw the triangle
-		buffer_triangle(img, v0, v1, v2, white);
+		buffer_triangle(img, t0, t1, t2, rand_color);
 	}
 
 	model_print(teapot);
