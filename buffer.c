@@ -126,7 +126,7 @@ barycentric(vec2i a, vec2i b, vec2i c, vec2i p)
 	vec3f ux = {c.x - a.x, b.x - a.x, a.x - p.x};
 	vec3f uy = {c.y - a.y, b.y - a.y, a.y - p.y};
 
-	vec3f u = vec3f_cross_product(ux, uy);
+	vec3f u = vec3f_cross(ux, uy);
 
 	// check for degenerate triangle
 	if (fabsf(u.z) < 1) {

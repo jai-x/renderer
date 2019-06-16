@@ -22,7 +22,7 @@ vec3f_from_line(const char* line)
 }
 
 vec3f
-vec3f_min_values(vec3f a, vec3f b)
+vec3f_min(vec3f a, vec3f b)
 {
 	vec3f out;
 	out.x = fminf(a.x, b.x);
@@ -32,7 +32,7 @@ vec3f_min_values(vec3f a, vec3f b)
 }
 
 vec3f
-vec3f_max_values(vec3f a, vec3f b)
+vec3f_max(vec3f a, vec3f b)
 {
 	vec3f out;
 	out.x = fmaxf(a.x, b.x);
@@ -60,11 +60,44 @@ vec3f_scale(vec3f old_min, vec3f old_max, vec3f new_min, vec3f new_max, vec3f va
 }
 
 vec3f
-vec3f_cross_product(vec3f a, vec3f b)
+vec3f_cross(vec3f a, vec3f b)
 {
 	vec3f out;
 	out.x = (a.y * b.z) - (a.z * b.y);
 	out.y = (a.z * b.x) - (a.x * b.z);
 	out.z = (a.x * b.y) - (a.y * b.x);
+	return out;
+}
+
+vec3f
+vec3f_sub(vec3f a, vec3f b)
+{
+	vec3f out;
+	out.x = a.x - b.x;
+	out.y = a.y - b.y;
+	out.z = a.z - b.z;
+	return out;
+}
+
+float
+vec3f_dot(vec3f a, vec3f b)
+{
+	return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+}
+
+float
+vec3f_magnitude(vec3f v)
+{
+	return sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+}
+
+vec3f
+vec3f_normalize(vec3f v)
+{
+	float length = vec3f_magnitude(v);
+	vec3f out;
+	out.x = v.x / length;
+	out.y = v.y / length;
+	out.z = v.z / length;
 	return out;
 }

@@ -62,8 +62,8 @@ model_alloc(const char* filename)
 			// assign the vertex and increment position
 			out->verts[v_pos++] = v;
 			// Update minimum and maximum values
-			out->min = vec3f_min_values(out->min, v);
-			out->max = vec3f_max_values(out->max, v);
+			out->min = vec3f_min(out->min, v);
+			out->max = vec3f_max(out->max, v);
 			continue;
 		}
 
