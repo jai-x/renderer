@@ -26,6 +26,9 @@ find_num_first_char(const char* filename, char first)
 	return count;
 }
 
+
+// Open a file from filename and parse as wavefront object file and allocate
+// model structures to contain model features.
 model*
 model_alloc(const char* filename)
 {
@@ -91,6 +94,8 @@ model_free(model* m)
 	free(m->faces); free(m);
 }
 
+
+// Debug printing
 void
 model_print(model* m)
 {

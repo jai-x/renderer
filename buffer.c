@@ -15,6 +15,7 @@ int_swap(int* a, int* b)
 	*b = temp;
 }
 
+// Allocate buffer with size w x h
 buffer*
 buffer_alloc(int w, int h)
 {
@@ -40,12 +41,14 @@ buffer_free(buffer* b)
 	free(b);
 }
 
+// Debug printing
 void
 buffer_print(buffer* b)
 {
 	printf("w: %d, h: %d\n", b->w, b->h);
 }
 
+// Write out buffer into file using the PPM image format with given filename
 void
 buffer_write(buffer* b, const char* filename)
 {
@@ -64,6 +67,7 @@ buffer_write(buffer* b, const char* filename)
 	fclose(out);
 }
 
+// Put color p onto coordinates x and y on the buffer
 void
 buffer_put_color(buffer* b, int x, int y, color p)
 {
@@ -76,6 +80,7 @@ buffer_put_color(buffer* b, int x, int y, color p)
 }
 
 
+// Draw a line on the buffer from (x1, y2) to (x2, y2) with color 'c' using
 // Bresenham's line algorithm.
 // I couldn't find a way to derive a non-buggy version myself so I just copied
 // an implementation I knew was working from ssloy/tinyrenderer.
@@ -112,11 +117,19 @@ buffer_line(buffer* b, int x1, int y1, int x2, int y2, color c)
 			y += (y2 > y1) ? 1 : -1;
 			err -= dx * 2;
 		}
-	};
+	}
 }
 
-// Find barycentric coordinates of point `p` with respect to triangle
-// represented by points `a`, `b`, and `c`
+// Finds barycentric coordinates of point `p` with respect to triangle
+// represented by points `a`, `b`, and `c`.
+// In a barycentric coordinates system, a triangle ABC will have the corner
+// coordintes represented as:
+//   AB: (1, 0, 0)
+//   BC: (0, 1, 0)
+//   AC: (0, 0, 1)
+// Any space within the triangle can therefore be represent respect to
+// the corners, in a 3 scalar vector with each scalar between 0 and 1.
+// The exact center of the triangle will have coordinates (1/3, 1/3, 1/3).
 static vec3f
 barycentric(vec2i a, vec2i b, vec2i c, vec2i p)
 {
@@ -129,8 +142,10 @@ barycentric(vec2i a, vec2i b, vec2i c, vec2i p)
 	vec3f u = vec3f_cross(ux, uy);
 
 	// check for degenerate triangle
+	// (where the points line up and it looks like a line instead of triangle)
 	if (fabsf(u.z) < 1) {
-		out.x = -1; // set coordinate outside triangle
+		// set output coordinates outside triangle
+		out = (vec3f) { -1, -1, -1 };
 		return out;
 	}
 
@@ -140,10 +155,14 @@ barycentric(vec2i a, vec2i b, vec2i c, vec2i p)
 	return out;
 }
 
+// Draw triangle of corner coordinates v0->v1->v2 on the buffer, with line color
+// and fill color `c`
 void
 buffer_triangle(buffer* b, vec2i v0, vec2i v1, vec2i v2, color c)
 {
-	// bounding box minimum coordinates
+	// find a bounding box within that surrounds the triangle
+
+	// find bounding box minimum coordinates
 	vec2i box_min = {b->w - 1, b->h - 1};
 	box_min = vec2i_min_values(box_min, v0);
 	box_min = vec2i_min_values(box_min, v1);
@@ -158,9 +177,10 @@ buffer_triangle(buffer* b, vec2i v0, vec2i v1, vec2i v2, color c)
 	// point in buffer to check
 	vec2i p;
 
+	// for each point in the bounding box that surrounds the triangle
 	for (p.x = box_min.x; p.x < box_max.x; p.x++) {
 		for (p.y = box_min.y; p.y < box_max.y; p.y++) {
-			// find barycentric coordinates of point p with respect to the given triangle vertices
+			// find barycentric coordinates of point p on the triangle
 			vec3f bc = barycentric(v0, v1, v2, p);
 
 			// coordinates less than zero fall outside the triangle and are skipped
@@ -168,6 +188,7 @@ buffer_triangle(buffer* b, vec2i v0, vec2i v1, vec2i v2, color c)
 				continue;
 			}
 
+			// this point is within the triangle, so draw it on the buffer
 			buffer_put_color(b, p.x, p.y, c);
 		}
 	}

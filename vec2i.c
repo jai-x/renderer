@@ -2,6 +2,7 @@
 
 #include "vec2i.h"
 
+// Debug printing
 void
 vec2i_print(vec2i v)
 {
@@ -20,6 +21,8 @@ imax(int a, int b)
 	return (a > b) ? a : b;
 }
 
+// Minimum values from the input component scalars.
+// Equivalent to { min(a.x, b.x), min(a.y, b.y) }
 vec2i
 vec2i_min_values(vec2i a, vec2i b)
 {
@@ -29,6 +32,8 @@ vec2i_min_values(vec2i a, vec2i b)
 	return out;
 }
 
+// Maximum values from the input component scalars
+// Equivalent to { max(a.x, b.x), max(a.y, b.y) }
 vec2i
 vec2i_max_values(vec2i a, vec2i b)
 {
