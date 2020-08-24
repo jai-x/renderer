@@ -11,9 +11,6 @@ screen_alloc(int w, int h, const char* title)
 {
 	screen* s = malloc(sizeof(screen));
 
-	s->w = w;
-	s->h = h;
-
 	SDL_Init(SDL_INIT_VIDEO);
 
 	s->window = SDL_CreateWindow(
@@ -22,7 +19,7 @@ screen_alloc(int w, int h, const char* title)
 		SDL_WINDOWPOS_CENTERED, // window y position
 		w,                      // window width
 		h,                      // window height
-		SDL_WINDOW_SHOWN        // window flags
+		SDL_WINDOW_RESIZABLE    // window flags
 	);
 
 	s->renderer = SDL_CreateRenderer(
@@ -30,6 +27,8 @@ screen_alloc(int w, int h, const char* title)
 		-1,
 		SDL_RENDERER_SOFTWARE
 	);
+
+	SDL_GetRendererOutputSize(s->renderer, &s->w, &s->h);
 
 	return s;
 }
@@ -50,6 +49,8 @@ screen_free(screen* s)
 bool
 screen_is_alive(screen* s)
 {
+	SDL_GetRendererOutputSize(s->renderer, &s->w, &s->h);
+
 	if (SDL_PollEvent(&s->event)) {
 		if (s->event.type == SDL_QUIT) {
 			return false;
@@ -62,6 +63,7 @@ void
 screen_clear(screen* s)
 {
 	SDL_RenderClear(s->renderer);
+
 	s->ticks = SDL_GetTicks();
 }
 
@@ -69,6 +71,8 @@ void
 screen_present(screen* s)
 {
 	SDL_RenderPresent(s->renderer);
+
+	// Add delay if rendering faster than the target delta
 	uint32_t delta = SDL_GetTicks() - s->ticks;
 	if (delta < target_delta) {
 		SDL_Delay(delta - target_delta);

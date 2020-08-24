@@ -6,18 +6,13 @@
 #include "vec3f.h"
 #include "screen.h"
 #include "screen_draw.h"
-
-#define IMG_X 700
-#define IMG_Y 700
-
-static const vec3f img_min = {0, 0, 0};
-static const vec3f img_max = {IMG_X, IMG_Y, 0};
+#include "screen_util.h"
 
 int
 main(void)
 {
 	model* teapot = model_alloc("./obj/teapot.obj");
-	screen* scrn = screen_alloc(IMG_X, IMG_Y, "renderer");
+	screen* scrn = screen_alloc(700, 700, "renderer");
 
 	while (screen_is_alive(scrn)) {
 		// clear screen to black
@@ -33,10 +28,10 @@ main(void)
 			vec3f v1 = teapot->verts[f.v1 - 1];
 			vec3f v2 = teapot->verts[f.v2 - 1];
 
-			// scale the coordinates to the size of the buffer
-			v0 = vec3f_scale(teapot->min, teapot->max, img_min, img_max, v0);
-			v1 = vec3f_scale(teapot->min, teapot->max, img_min, img_max, v1);
-			v2 = vec3f_scale(teapot->min, teapot->max, img_min, img_max, v2);
+			// scale the coordinates to the size of the screen
+			v0 = vec3f_scale(teapot->min, teapot->max, vec3f_zero, screen_util_vec3f_size(scrn), v0);
+			v1 = vec3f_scale(teapot->min, teapot->max, vec3f_zero, screen_util_vec3f_size(scrn), v1);
+			v2 = vec3f_scale(teapot->min, teapot->max, vec3f_zero, screen_util_vec3f_size(scrn), v2);
 
 			// use only the x and y components as integers
 			vec2i t0 = {v0.x, v0.y};
