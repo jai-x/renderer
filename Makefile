@@ -1,5 +1,5 @@
 EXE = renderer
-LIBS = -lm
+LIBS = -lm -lSDL2
 CFLAGS = -std=c99 -Wall -Wextra -pedantic -pedantic-errors
 
 SRCS = $(wildcard *.c)
@@ -10,4 +10,3 @@ $(EXE): $(SRCS) $(HDRS)
 
 clean:
 	$(RM) $(EXE)
-	$(RM) *.ppm
