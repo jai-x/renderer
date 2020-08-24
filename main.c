@@ -16,10 +16,11 @@ static const vec3f img_max = {IMG_X, IMG_Y, 0};
 int
 main(void)
 {
-	model* teapot = model_alloc("teapot.obj");
+	model* teapot = model_alloc("./obj/teapot.obj");
 	screen* scrn = screen_alloc(IMG_X, IMG_Y, "renderer");
 
 	while (screen_is_alive(scrn)) {
+		// clear screen to black
 		screen_set_color(scrn, 0, 0, 0, 255);
 		screen_clear(scrn);
 
