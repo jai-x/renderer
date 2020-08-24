@@ -4,6 +4,8 @@
 
 #include "screen.h"
 
+static const uint32_t target_delta = 1000 / 30; // 30 fps
+
 screen*
 screen_alloc(int w, int h, const char* title)
 {
@@ -60,12 +62,17 @@ void
 screen_clear(screen* s)
 {
 	SDL_RenderClear(s->renderer);
+	s->ticks = SDL_GetTicks();
 }
 
 void
 screen_present(screen* s)
 {
 	SDL_RenderPresent(s->renderer);
+	uint32_t delta = SDL_GetTicks() - s->ticks;
+	if (delta < target_delta) {
+		SDL_Delay(delta - target_delta);
+	}
 }
 
 void
