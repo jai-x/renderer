@@ -88,5 +88,10 @@ screen_set_color(screen* s, int r, int g, int b, int a)
 void
 screen_set_point(screen* s, int x, int y)
 {
+	// OOB check
+	if (x < 0 || y < 0 || x > s->w || y > s->h) {
+		return;
+	}
+
 	SDL_RenderDrawPoint(s->renderer, x, y);
 }
