@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdbool.h>
 
 #include "util.h"
 #include "vec2i.h"
@@ -46,4 +47,15 @@ barycentric(vec2i a, vec2i b, vec2i c, vec2i p)
 	out.y = u.y / u.z;
 	out.z = u.x / u.z;
 	return out;
+}
+
+// Determines if point `p` lies within the triangle represented by
+// points `a`, `b`, and `c`.
+bool
+within_triangle(vec2i a, vec2i b, vec2i c, vec2i p)
+{
+	vec3f bc = barycentric(a, b, c, p);
+
+	// barycentric coordinates less than zero fall outside the triangle
+	return !(bc.x < 0 || bc.y < 0 || bc.z < 0);
 }

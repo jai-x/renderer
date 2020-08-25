@@ -74,16 +74,11 @@ screen_draw_triangle(screen* s, vec2i v0, vec2i v1, vec2i v2)
 	// for each point in the bounding box that surrounds the triangle
 	for (p.x = box_min.x; p.x < box_max.x; p.x++) {
 		for (p.y = box_min.y; p.y < box_max.y; p.y++) {
-			// find barycentric coordinates of point p on the triangle
-			vec3f bc = barycentric(v0, v1, v2, p);
-
-			// coordinates less than zero fall outside the triangle and are skipped
-			if (bc.x < 0 || bc.y < 0 || bc.z < 0) {
-				continue;
+			// check if the point is within the triangle
+			if (within_triangle(v0, v1, v2, p)) {
+				// if it is, draw it on the screen
+				screen_set_point(s, p.x, p.y);
 			}
-
-			// this point is within the triangle, so draw it on the buffer
-			screen_set_point(s, p.x, p.y);
 		}
 	}
 }
