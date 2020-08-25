@@ -46,15 +46,23 @@ screen_free(screen* s)
 	free(s);
 }
 
-bool
-screen_is_alive(screen* s)
+screen_event
+screen_check_events(screen* s)
 {
 	if (SDL_PollEvent(&s->event)) {
 		if (s->event.type == SDL_QUIT) {
-			return false;
+			return SCREEN_QUIT;
+		}
+
+		if (s->event.type == SDL_KEYDOWN) {
+			// r key
+			if (s->event.key.keysym.sym == SDLK_r) {
+				return SCREEN_REDRAW;
+			}
 		}
 	}
-	return true;
+
+	return SCREEN_CONTINUE;
 }
 
 void

@@ -12,9 +12,11 @@ typedef struct {
 	SDL_Event event;
 } screen;
 
+typedef enum { SCREEN_CONTINUE, SCREEN_QUIT, SCREEN_REDRAW } screen_event;
+
 screen* screen_alloc(int w, int h, const char* title);
 void screen_free(screen* s);
-bool screen_is_alive(screen* s);
+screen_event screen_check_events(screen* s);
 void screen_clear(screen* s);
 void screen_present(screen* s);
 void screen_set_color(screen* s, int r, int g, int b, int a);
