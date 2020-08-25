@@ -46,25 +46,6 @@ vec3f_max(vec3f a, vec3f b)
 	return out;
 }
 
-static float
-scale(float old_min, float old_max, float new_min, float new_max, float val)
-{
-	float old_range = old_max - old_min;
-	float new_range = new_max - new_min;
-	return ((val - old_min) * (new_range / old_range)) + new_min;
-}
-
-// ??? weird scaling operation ???
-vec3f
-vec3f_scale(vec3f old_min, vec3f old_max, vec3f new_min, vec3f new_max, vec3f val)
-{
-	vec3f out;
-	out.x = scale(old_min.x, old_max.x, new_min.x, new_max.x, val.x);
-	out.y = scale(old_min.y, old_max.y, new_min.y, new_max.y, val.y);
-	out.z = scale(old_min.z, old_max.z, new_min.z, new_max.z, val.z);
-	return out;
-}
-
 // Cross product of vectors
 vec3f
 vec3f_cross(vec3f a, vec3f b)

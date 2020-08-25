@@ -4,9 +4,9 @@
 #include "model.h"
 #include "vec2i.h"
 #include "vec3f.h"
+#include "util.h"
 #include "screen.h"
 #include "screen_draw.h"
-#include "screen_util.h"
 
 int
 main(void)
@@ -28,15 +28,19 @@ main(void)
 			vec3f v1 = teapot->verts[f.v1 - 1];
 			vec3f v2 = teapot->verts[f.v2 - 1];
 
-			// scale the coordinates to the size of the screen
-			v0 = vec3f_scale(teapot->min, teapot->max, vec3f_zero, screen_util_vec3f_size(scrn), v0);
-			v1 = vec3f_scale(teapot->min, teapot->max, vec3f_zero, screen_util_vec3f_size(scrn), v1);
-			v2 = vec3f_scale(teapot->min, teapot->max, vec3f_zero, screen_util_vec3f_size(scrn), v2);
-
-			// use only the x and y components as integers
-			vec2i t0 = {v0.x, v0.y};
-			vec2i t1 = {v1.x, v1.y};
-			vec2i t2 = {v2.x, v2.y};
+			// map the vertices to screen space and only use the x and y coordinates
+			vec2i t0 = {
+				a_map(v0.x, teapot->min.x, teapot->max.x, 0, scrn->w),
+				a_map(v0.y, teapot->min.y, teapot->max.y, 0, scrn->h)
+			};
+			vec2i t1 = {
+				a_map(v1.x, teapot->min.x, teapot->max.x, 0, scrn->w),
+				a_map(v1.y, teapot->min.y, teapot->max.y, 0, scrn->h)
+			};
+			vec2i t2 = {
+				a_map(v2.x, teapot->min.x, teapot->max.x, 0, scrn->w),
+				a_map(v2.y, teapot->min.y, teapot->max.y, 0, scrn->h)
+			};
 
 			// generate a random color for this face
 			screen_set_color(scrn, rand() % 255, rand() % 255, rand() % 255, 255);

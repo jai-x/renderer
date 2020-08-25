@@ -59,3 +59,12 @@ within_triangle(vec2i a, vec2i b, vec2i c, vec2i p)
 	// barycentric coordinates less than zero fall outside the triangle
 	return !(bc.x < 0 || bc.y < 0 || bc.z < 0);
 }
+
+
+// Returns an affine map for value `val`, mapping from range A (a_min to a_max)
+// to range B (b_min to b_max)
+float
+a_map(float val, float a_min, float a_max, float b_min, float b_max)
+{
+	return (val - a_min) * ((b_max - b_min) / (a_max - a_min));
+}
