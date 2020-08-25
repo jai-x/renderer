@@ -19,7 +19,7 @@ screen_alloc(int w, int h, const char* title)
 		SDL_WINDOWPOS_CENTERED, // window y position
 		w,                      // window width
 		h,                      // window height
-		SDL_WINDOW_RESIZABLE    // window flags
+		SDL_WINDOW_SHOWN        // window flags
 	);
 
 	s->renderer = SDL_CreateRenderer(
@@ -49,8 +49,6 @@ screen_free(screen* s)
 bool
 screen_is_alive(screen* s)
 {
-	SDL_GetRendererOutputSize(s->renderer, &s->w, &s->h);
-
 	if (SDL_PollEvent(&s->event)) {
 		if (s->event.type == SDL_QUIT) {
 			return false;
