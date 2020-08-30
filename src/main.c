@@ -8,6 +8,8 @@
 #include "screen.h"
 #include "screen_draw.h"
 
+static const vec3f light_direction = {0, 0, -1};
+
 void
 render(screen* scrn, model* mdl)
 {
@@ -38,11 +40,23 @@ render(screen* scrn, model* mdl)
 			a_map(v2.y, mdl->min.y, mdl->max.y, 0, scrn->h)
 		};
 
-		// generate a random color for this face
-		screen_set_color(scrn, rand() % 255, rand() % 255, rand() % 255, 255);
+		// normal of the triangle, from the cross product of two sides
+		vec3f t_norm = vec3f_cross(vec3f_sub(v2, v0), vec3f_sub(v1, v0));
 
-		// draw the triangle
-		screen_draw_triangle(scrn, t0, t1, t2);
+		// normalise the normal vector
+		t_norm = vec3f_normalize(t_norm);
+
+		// light intensity of triangle
+		float t_intensity = vec3f_dot(t_norm, light_direction);
+
+		// negative light intensity means the triangle is invisble/not reachable by light
+		if (t_intensity > 0) {
+			// set color depending on light intensity
+			screen_set_color(scrn, 255 * t_intensity, 255 * t_intensity, 255 * t_intensity, 255);
+
+			// draw the triangle
+			screen_draw_triangle(scrn, t0, t1, t2);
+		}
 	}
 }
 
@@ -50,7 +64,7 @@ int
 main(void)
 {
 	model* teapot = model_alloc("./obj/teapot.obj");
-	screen* scrn = screen_alloc(700, 700, "renderer");
+	screen* scrn = screen_alloc(800, 600, "renderer");
 
 	// intial render
 	render(scrn, teapot);
