@@ -55,9 +55,14 @@ screen_check_events(screen* s)
 		}
 
 		if (s->event.type == SDL_KEYDOWN) {
-			// r key
+			// r key to redraw
 			if (s->event.key.keysym.sym == SDLK_r) {
 				return SCREEN_REDRAW;
+			}
+
+			// q key to quit
+			if (s->event.key.keysym.sym == SDLK_q) {
+				return SCREEN_QUIT;
 			}
 		}
 	}
