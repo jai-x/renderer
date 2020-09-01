@@ -1,5 +1,7 @@
 #include <stdbool.h>
 #include <math.h>
+#include <assert.h>
+
 #include <SDL2/SDL.h>
 
 #include "screen.h"
@@ -100,9 +102,7 @@ void
 screen_set_point(screen* s, int x, int y)
 {
 	// OOB check
-	if (x < 0 || y < 0 || x > s->w || y > s->h) {
-		return;
-	}
+	assert((x >= 0) && (y >= 0) && (x <= s->w) && (y <= s->h));
 
 	SDL_RenderDrawPoint(s->renderer, x, y);
 }
