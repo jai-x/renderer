@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <sys/time.h>
+#include <sys/resource.h>
+
 #include "model.h"
 #include "vec2i.h"
 #include "vec3f.h"
@@ -10,7 +13,7 @@
 
 static const vec3f light_direction = {0, 0, -1};
 
-void
+static inline void
 render(screen* scrn, model* mdl)
 {
 	// clear screen to black
@@ -60,6 +63,28 @@ render(screen* scrn, model* mdl)
 	}
 }
 
+static void
+timed_render(screen* scrn, model* mdl)
+{
+	// structs
+	struct rusage stats;
+	struct timeval start, end, elapsed;
+
+	// get system time usage before
+	getrusage(RUSAGE_SELF, &stats);
+	start = stats.ru_utime;
+
+	render(scrn, mdl);
+
+	// get system time usage after
+	getrusage(RUSAGE_SELF, &stats);
+	end = stats.ru_utime;
+
+	// subtract
+	timeval_sub(&start, &end, &elapsed);
+	printf("[render time] elapsed: %lu.%06us\n", elapsed.tv_sec, end.tv_usec);
+}
+
 int
 main(void)
 {
@@ -67,7 +92,7 @@ main(void)
 	screen* scrn = screen_alloc(800, 600, "renderer");
 
 	// intial render
-	render(scrn, teapot);
+	timed_render(scrn, teapot);
 
 	while (true) {
 		screen_event e = screen_check_events(scrn);
@@ -77,7 +102,7 @@ main(void)
 		}
 
 		if (e == SCREEN_REDRAW) {
-			render(scrn, teapot);
+			timed_render(scrn, teapot);
 		}
 
 		screen_present(scrn);

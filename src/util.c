@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdbool.h>
+#include <sys/time.h>
 
 #include "util.h"
 #include "vec2i.h"
@@ -67,4 +68,43 @@ float
 a_map(float val, float a_min, float a_max, float b_min, float b_max)
 {
 	return (val - a_min) * ((b_max - b_min) / (a_max - a_min));
+}
+
+
+// Subracts the timeval `b` from timeval `a` and populates the results into `r`
+// and returns true if the value is negative.
+// Shamelessly stolen and adapted from: https://gist.github.com/vchernov/4774682
+bool
+timeval_sub(const struct timeval* a, const struct timeval* b, struct timeval* r)
+{
+	bool negative;
+	if (a->tv_sec > b->tv_sec) {
+		negative = false;
+		if (a->tv_usec >= b->tv_usec) {
+			r->tv_sec = a->tv_sec - b->tv_sec;
+			r->tv_usec = a->tv_usec - b->tv_usec;
+		} else {
+			r->tv_sec = a->tv_sec - b->tv_sec - 1;
+			r->tv_usec = 1000000 - b->tv_usec + a->tv_usec;
+		}
+	} else if (a->tv_sec < b->tv_sec) {
+		negative = true;
+		if (a->tv_usec > b->tv_usec) {
+			r->tv_sec = b->tv_sec - a->tv_sec - 1;
+			r->tv_usec = 1000000 - a->tv_usec + b->tv_usec;
+		} else {
+			r->tv_sec = b->tv_sec - a->tv_sec;
+			r->tv_usec = b->tv_usec - a->tv_usec;
+		}
+	} else {
+		r->tv_sec = 0;
+		if (a->tv_usec >= b->tv_usec) {
+			negative = false;
+			r->tv_usec = a->tv_usec - b->tv_usec;
+		} else {
+			negative = true;
+			r->tv_usec = b->tv_usec - a->tv_usec;
+		}
+	}
+	return negative;
 }
