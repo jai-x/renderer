@@ -7,6 +7,7 @@
 typedef struct {
 	int w; int h;
 	uint32_t ticks;
+	float* z_buffer;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	SDL_Event event;
@@ -21,3 +22,5 @@ void screen_clear(screen* s);
 void screen_present(screen* s);
 void screen_set_color(screen* s, int r, int g, int b, int a);
 void screen_set_point(screen* s, int x, int y);
+float screen_get_z(screen* s, int x, int y);
+void screen_set_z(screen* s, int x, int y, float z);

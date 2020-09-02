@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <math.h>
+#include <string.h>
 #include <assert.h>
 
 #include <SDL2/SDL.h>
@@ -30,7 +31,11 @@ screen_alloc(int w, int h, const char* title)
 		SDL_RENDERER_SOFTWARE
 	);
 
+	// get real height and width from renderer size
 	SDL_GetRendererOutputSize(s->renderer, &s->w, &s->h);
+
+	// allocate z buffer based on screen size
+	s->z_buffer = calloc((s->w * s->h), sizeof(float));
 
 	return s;
 }
@@ -42,6 +47,9 @@ screen_free(screen* s)
 	SDL_DestroyWindow(s->window);
 	SDL_Quit();
 
+	free(s->z_buffer);
+
+	s->z_buffer = NULL;
 	s->renderer = NULL;
 	s->window = NULL;
 
@@ -77,6 +85,11 @@ screen_clear(screen* s)
 {
 	SDL_RenderClear(s->renderer);
 
+	// set z_buffer to be smallest floating point value
+	for (int i = 0; i < (s->w * s->h); i++) {
+		s->z_buffer[i] = -FLT_MAX;
+	}
+
 	s->ticks = SDL_GetTicks();
 }
 
@@ -105,4 +118,22 @@ screen_set_point(screen* s, int x, int y)
 	assert((x >= 0) && (y >= 0) && (x <= s->w) && (y <= s->h));
 
 	SDL_RenderDrawPoint(s->renderer, x, y);
+}
+
+float
+screen_get_z(screen* s, int x, int y)
+{
+	// OOB check
+	assert((x >= 0) && (y >= 0) && (x <= s->w) && (y <= s->h));
+
+	return s->z_buffer[x + (y * s->w)];
+}
+
+void
+screen_set_z(screen* s, int x, int y, float z)
+{
+	// OOB check
+	assert((x >= 0) && (y >= 0) && (x <= s->w) && (y <= s->h));
+
+	s->z_buffer[x + (y * s->w)] = z;
 }

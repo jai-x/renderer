@@ -70,9 +70,23 @@ screen_draw_triangle(screen* scrn, vec3f a, vec3f b, vec3f c)
 	// for each point in the bounding box that surrounds the triangle
 	for (p.x = box_min.x; p.x < box_max.x; p.x++) {
 		for (p.y = box_min.y; p.y < box_max.y; p.y++) {
-			// check if the point is within the triangle
-			if (within_triangle(a, b, c, p)) {
-				// if it is, draw it on the screen
+			vec3f bc = barycentric(a, b, c, p);
+
+			// barycentric coordinates less than zero fall outside the triangle
+			if (bc.x < 0 || bc.y < 0 || bc.z < 0) {
+				continue;
+			}
+
+			// find z buffer value of this pixel
+			// sum of product of z values of the trinagle vertices and the barycentric coordinates
+			// TODO: Explain why this works
+			p.z = 0.0f + (a.z * bc.x) + (b.z * bc.y) + (c.z * bc.z);
+
+			// if the new z buffer value is larger than the current one for this pixel
+			if (screen_get_z(scrn, p.x, p.y) < p.z ) {
+				// update to the new z value for this pixel
+				screen_set_z(scrn, p.x, p.y, p.z);
+				// draw the pixel
 				screen_set_point(scrn, p.x, p.y);
 			}
 		}
