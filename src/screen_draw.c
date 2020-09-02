@@ -1,9 +1,9 @@
 #include <stdbool.h>
 #include <math.h>
 
+#include "vec3f.h"
 #include "screen.h"
 #include "screen_draw.h"
-#include "vec2i.h"
 #include "util.h"
 
 // Draw a line on the screen from (x1, y2) to (x2, y2) using Bresenham's line
@@ -49,35 +49,31 @@ screen_draw_line(screen* s, int x1, int y1, int x2, int y2)
 	}
 }
 
-// Draw triangle of corner coordinates v0->v1->v2 on the screen, with line color
-// and fill color `c`
+// Draw triangle represented by vertices `a`, `b`, and `c` on the screen
 void
-screen_draw_triangle(screen* s, vec2i v0, vec2i v1, vec2i v2)
+screen_draw_triangle(screen* scrn, vec3f a, vec3f b, vec3f c)
 {
-	// find a bounding box within that surrounds the triangle
+	vec3f box_min = {scrn->w - 1, scrn->h - 1, 0};
+	vec3f box_max = {0, 0, 0};
 
-	// find bounding box minimum coordinates
-	vec2i box_min = {s->w - 1, s->h - 1};
-	box_min = vec2i_min_values(box_min, v0);
-	box_min = vec2i_min_values(box_min, v1);
-	box_min = vec2i_min_values(box_min, v2);
+	box_min = vec3f_min(box_min, a);
+	box_min = vec3f_min(box_min, b);
+	box_min = vec3f_min(box_min, c);
 
-	// bounding box maximum coordinates
-	vec2i box_max = {0, 0};
-	box_max = vec2i_max_values(box_max, v0);
-	box_max = vec2i_max_values(box_max, v1);
-	box_max = vec2i_max_values(box_max, v2);
+	box_max = vec3f_max(box_max, a);
+	box_max = vec3f_max(box_max, b);
+	box_max = vec3f_max(box_max, c);
 
 	// point in buffer to check
-	vec2i p;
+	vec3f p;
 
 	// for each point in the bounding box that surrounds the triangle
 	for (p.x = box_min.x; p.x < box_max.x; p.x++) {
 		for (p.y = box_min.y; p.y < box_max.y; p.y++) {
 			// check if the point is within the triangle
-			if (within_triangle(v0, v1, v2, p)) {
+			if (within_triangle(a, b, c, p)) {
 				// if it is, draw it on the screen
-				screen_set_point(s, p.x, p.y);
+				screen_set_point(scrn, p.x, p.y);
 			}
 		}
 	}

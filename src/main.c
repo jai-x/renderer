@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -12,6 +13,16 @@
 #include "screen_draw.h"
 
 static const vec3f light_direction = {0, 0, -1};
+
+static inline vec3f
+model_to_screen(screen* scrn, model* mdl, vec3f v)
+{
+	return (vec3f) {
+		floorf(a_map(v.x, mdl->min.x, mdl->max.x, 0, scrn->w)),
+		floorf(a_map(v.y, mdl->min.y, mdl->max.y, 0, scrn->h)),
+		v.z
+	};
+}
 
 static inline void
 render(screen* scrn, model* mdl)
@@ -30,18 +41,9 @@ render(screen* scrn, model* mdl)
 		vec3f v2 = mdl->verts[f.v2 - 1];
 
 		// map the vertices to screen space and only use the x and y coordinates
-		vec2i t0 = {
-			a_map(v0.x, mdl->min.x, mdl->max.x, 0, scrn->w),
-			a_map(v0.y, mdl->min.y, mdl->max.y, 0, scrn->h)
-		};
-		vec2i t1 = {
-			a_map(v1.x, mdl->min.x, mdl->max.x, 0, scrn->w),
-			a_map(v1.y, mdl->min.y, mdl->max.y, 0, scrn->h)
-		};
-		vec2i t2 = {
-			a_map(v2.x, mdl->min.x, mdl->max.x, 0, scrn->w),
-			a_map(v2.y, mdl->min.y, mdl->max.y, 0, scrn->h)
-		};
+		vec3f t0 = model_to_screen(scrn, mdl, v0);
+		vec3f t1 = model_to_screen(scrn, mdl, v1);
+		vec3f t2 = model_to_screen(scrn, mdl, v2);
 
 		// normal of the triangle, from the cross product of two sides
 		vec3f t_norm = vec3f_cross(vec3f_sub(v2, v0), vec3f_sub(v1, v0));
