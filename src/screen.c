@@ -25,11 +25,8 @@ screen_alloc(int w, int h, const char* title)
 		SDL_WINDOW_SHOWN        // window flags
 	);
 
-	s->renderer = SDL_CreateRenderer(
-		s->window,
-		-1,
-		SDL_RENDERER_SOFTWARE
-	);
+	// create software renderer that outputs directly to the window surface
+	s->renderer = SDL_CreateSoftwareRenderer(SDL_GetWindowSurface(s->window));
 
 	// get real height and width from renderer size
 	SDL_GetRendererOutputSize(s->renderer, &s->w, &s->h);
@@ -96,7 +93,12 @@ screen_clear(screen* s)
 void
 screen_present(screen* s)
 {
-	SDL_RenderPresent(s->renderer);
+	// Since the renderer was created with `SDL_CreateSoftwareRenderer` we
+	// call `SDL_UpdateWindowSurface()` instead of `SDL_RenderPresent` as the
+	// SDL_Renderer in software mode has already made the changes to the window
+	// surface, so we just need to window to present the suface changes to the
+	// framebuffer
+	SDL_UpdateWindowSurface(s->window);
 
 	// Add delay if rendering faster than the target delta
 	uint32_t delta = SDL_GetTicks() - s->ticks;
