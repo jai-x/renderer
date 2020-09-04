@@ -18,12 +18,12 @@ int_swap(int* a, int* b)
 // Finds barycentric coordinates of point `p` with respect to triangle
 // represented by points `a`, `b`, and `c` only in the X and Y axis.
 // In a barycentric coordinates system, a triangle ABC will have the corner
-// coordintes represented as:
+// coordinates represented as:
 //   AB: (1, 0, 0)
 //   BC: (0, 1, 0)
 //   AC: (0, 0, 1)
-// Any space within the triangle can therefore be represent respect to
-// the corners, in a 3 scalar vector with each scalar between 0 and 1.
+// Any space within the triangle can therefore be represented with respect to
+// the corners in a 3 component vector, with each component between 0 and 1.
 // The exact center of the triangle will have coordinates (1/3, 1/3, 1/3).
 vec3f
 barycentric(vec3f a, vec3f b, vec3f c, vec3f p)

@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -15,20 +14,19 @@
 static const vec3f light_direction = {0, 0, -1};
 
 // Scales `v` from the model space in `mdl` to the screen space in `scrn`.
-// This is done via an affine map on x and y component.
+// This is done via an affine map on the x and y coordinates of `v`.
 // Since we are using the max ranges of both model space and screen space, this
-// scaling has the effect of centering the model within screen space.
+// results in the centering and maximizing the model within screen space.
 // Since we are currently only doing a simple 2D orthographic projection without
-// considering perspective, this operation does not consider the z axis.
+// considering perspective, this operation does not affect the z axis at all.
 // Since the output vec3f is expected in screen space, the resultant coordinates
 // must be converted to integers.
 static inline vec3f
 model_to_screen(screen* scrn, model* mdl, vec3f v)
 {
-	// flooring a float is equivalent to casting to an integer, and looks nicer
 	return (vec3f) {
-		floorf(a_map(v.x, mdl->min.x, mdl->max.x, 0, scrn->w)),
-		floorf(a_map(v.y, mdl->min.y, mdl->max.y, 0, scrn->h)),
+		(int) a_map(v.x, mdl->min.x, mdl->max.x, 0, scrn->w),
+		(int) a_map(v.y, mdl->min.y, mdl->max.y, 0, scrn->h),
 		v.z
 	};
 }
@@ -49,7 +47,7 @@ render(screen* scrn, model* mdl)
 		vec3f v1 = mdl->verts[f.v1 - 1];
 		vec3f v2 = mdl->verts[f.v2 - 1];
 
-		// map the vertices to screen space and only use the x and y coordinates
+		// map the vertices to screen space
 		vec3f t0 = model_to_screen(scrn, mdl, v0);
 		vec3f t1 = model_to_screen(scrn, mdl, v1);
 		vec3f t2 = model_to_screen(scrn, mdl, v2);

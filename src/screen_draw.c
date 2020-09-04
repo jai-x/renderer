@@ -49,44 +49,71 @@ screen_draw_line(screen* s, int x1, int y1, int x2, int y2)
 	}
 }
 
-// Draw triangle represented by vertices `a`, `b`, and `c` on the screen
+// Draw triangle represented by vertices `a`, `b`, and `c` on screen `scrn`
 void
 screen_draw_triangle(screen* scrn, vec3f a, vec3f b, vec3f c)
 {
+	// Iteratively the find the bottom left corner of the minimum bounding box
+	// surrounding the triangle in screen space
 	vec3f box_min = {scrn->w - 1, scrn->h - 1, 0};
-	vec3f box_max = {0, 0, 0};
-
 	box_min = vec3f_min(box_min, a);
 	box_min = vec3f_min(box_min, b);
 	box_min = vec3f_min(box_min, c);
 
+	// Iteratively the find the top right corner of the minimum bounding box
+	// surrounding the triangle in screen space
+	vec3f box_max = {0, 0, 0};
 	box_max = vec3f_max(box_max, a);
 	box_max = vec3f_max(box_max, b);
 	box_max = vec3f_max(box_max, c);
 
-	// point in buffer to check
 	vec3f p;
 
-	// for each point in the bounding box that surrounds the triangle
+	// For each point in the minimum bounding box that surrounds the triangle
 	for (p.x = box_min.x; p.x < box_max.x; p.x++) {
 		for (p.y = box_min.y; p.y < box_max.y; p.y++) {
+			// Find the barycentric coordinates of this point
 			vec3f bc = barycentric(a, b, c, p);
 
-			// barycentric coordinates less than zero fall outside the triangle
+			// If the barycentric coordinates are less than zero fall, this
+			// point lies outside the triangle, so skip drawing for this point
 			if (bc.x < 0 || bc.y < 0 || bc.z < 0) {
 				continue;
 			}
 
-			// find z buffer value of this pixel
-			// sum of product of z values of the trinagle vertices and the barycentric coordinates
-			// TODO: Explain why this works
-			p.z = 0.0f + (a.z * bc.x) + (b.z * bc.y) + (c.z * bc.z);
+			// Barycentric coordinates of the point in the triangle can be
+			// viewed as the weighted sum of the point in releation to all of
+			// the vertices. As such, finding the z component of the point is
+			// a linear combination of the z components of the vertices and the
+			// barycentric coordinates of the point.
 
-			// if the new z buffer value is larger than the current one for this pixel
+			// As an implementation detail, since the barycentric coordinate is
+			// represented as type vec3f, it is not immediately clear which
+			// vector component is representative of which triangle vertex.
+			// For a triangle with vertices ABC which have been passed as
+			// arguments to obtain the barycentric vec3f coordinate in the same
+			// order, the relation applies as follows:
+			//   Vertex A <=> First Barycentric component (x)
+			//   Vertex B <=> Second Barycentric component (y)
+			//   Vertex C <=> Third Barycentric component (z)
+
+			// Calculate linear combination of the vertex z components and the
+			// barycentric coordinate to get the z components of the point.
+			p.z = 0.0f + (a.z * bc.x) + (b.z * bc.y) + (c.z * bc.z);
+			//            ^        ^     ^        ^     ^        ^
+			//            |        |     |        |     |        |
+			//            |        |     |        |     ------------> Vertex C <=> Third Barycentric component (z)
+			//            |        |     ---------------------------> Vertex B <=> Second Barycentric component (y)
+			//            ------------------------------------------> Vertex A <=> First Barycentric component (x)
+
+			// Check the screen z buffer to see if the z component value for
+			// this point is larger than the current one. If it is, then this
+			// point lies infront of the previous drawn point in this position
+			// and can be drawn over.
 			if (screen_get_z(scrn, p.x, p.y) < p.z ) {
-				// update to the new z value for this pixel
+				// Update the z buffer to the new z value for this point
 				screen_set_z(scrn, p.x, p.y, p.z);
-				// draw the pixel
+				// Draw the point on the screen
 				screen_set_point(scrn, p.x, p.y);
 			}
 		}
