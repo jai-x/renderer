@@ -34,6 +34,9 @@ screen_alloc(int w, int h, const char* title)
 	// allocate z buffer based on screen size
 	s->z_buffer = calloc((s->w * s->h), sizeof(float));
 
+	// get initial ticks
+	s->ticks = SDL_GetTicks();
+
 	return s;
 }
 
@@ -86,8 +89,6 @@ screen_clear(screen* s)
 	for (int i = 0; i < (s->w * s->h); i++) {
 		s->z_buffer[i] = -FLT_MAX;
 	}
-
-	s->ticks = SDL_GetTicks();
 }
 
 void
@@ -103,8 +104,11 @@ screen_present(screen* s)
 	// Add delay if rendering faster than the target delta
 	uint32_t delta = SDL_GetTicks() - s->ticks;
 	if (delta < target_delta) {
-		SDL_Delay(delta - target_delta);
+		SDL_Delay(target_delta - delta);
 	}
+
+	// Update ticks for the next round of rendering
+	s->ticks = SDL_GetTicks();
 }
 
 void
