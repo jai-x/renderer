@@ -14,8 +14,8 @@ face_from_line(const char* line)
 {
 	char* end;
 	face out;
-	out.v0 = strtol(line, &end, 10);
-	out.v1 = strtol(end, &end, 10);
-	out.v2 = strtol(end, NULL, 10);
+	out.v0 = (int) strtol(line, &end, 10);
+	out.v1 = (int) strtol(end, &end, 10);
+	out.v2 = (int) strtol(end, NULL, 10);
 	return out;
 }

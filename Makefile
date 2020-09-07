@@ -2,7 +2,7 @@
 
 EXE = renderer
 LIBS = -lm -lSDL2
-CFLAGS = -std=c99 -Wall -Wextra -Werror -Wpedantic -pedantic-errors -pipe
+CFLAGS = -std=c99 -Wall -Wextra -Werror -Wconversion -Wpedantic -pedantic-errors -pipe
 
 SRC_DIR = src
 BUILD_DIR = build

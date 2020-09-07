@@ -1,13 +1,17 @@
 #pragma once
 
+#include <stddef.h>
+
 #include "face.h"
 #include "vec3f.h"
 
 typedef struct {
-	int    num_verts;
-	vec3f* verts;
 	vec3f  min, max;
-	int    num_faces;
+
+	size_t num_verts;
+	vec3f* verts;
+
+	size_t num_faces;
 	face*  faces;
 } model;
 

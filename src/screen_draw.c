@@ -110,11 +110,11 @@ screen_draw_triangle(screen* scrn, vec3f a, vec3f b, vec3f c)
 			// this point is larger than the current one. If it is, then this
 			// point lies infront of the previous drawn point in this position
 			// and can be drawn over.
-			if (screen_get_z(scrn, p.x, p.y) < p.z ) {
+			if (screen_get_z(scrn, (int) p.x, (int) p.y) < p.z ) {
 				// Update the z buffer to the new z value for this point
-				screen_set_z(scrn, p.x, p.y, p.z);
+				screen_set_z(scrn, (int) p.x, (int) p.y, p.z);
 				// Draw the point on the screen
-				screen_set_point(scrn, p.x, p.y);
+				screen_set_point(scrn, (int) p.x, (int) p.y);
 			}
 		}
 	}

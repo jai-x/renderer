@@ -32,7 +32,7 @@ screen_alloc(int w, int h, const char* title)
 	SDL_GetRendererOutputSize(s->renderer, &s->w, &s->h);
 
 	// allocate z buffer based on screen size
-	s->z_buffer = calloc((s->w * s->h), sizeof(float));
+	s->z_buffer = calloc((size_t)(s->w * s->h), sizeof(float));
 
 	// get initial ticks
 	s->ticks = SDL_GetTicks();
@@ -114,7 +114,7 @@ screen_present(screen* s)
 void
 screen_set_color(screen* s, int r, int g, int b, int a)
 {
-	SDL_SetRenderDrawColor(s->renderer, r, g, b, a);
+	SDL_SetRenderDrawColor(s->renderer, (uint8_t) r, (uint8_t) g, (uint8_t) b, (uint8_t) a);
 }
 
 void

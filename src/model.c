@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,10 +9,10 @@
 #define LINE_SIZE 100
 
 // Count the number of lines in the file that begin with the specific character
-static int
+static size_t
 find_num_first_char(const char* filename, char first)
 {
-	int count = 0;
+	size_t count = 0;
 	char* line = malloc(sizeof(char) * LINE_SIZE);
 	FILE* model_file = fopen(filename, "r");
 
@@ -99,7 +100,7 @@ model_free(model* m)
 void
 model_print(model* m)
 {
-	printf("vertexes: %d, faces: %d\n", m->num_verts, m->num_faces);
+	printf("vertexes: %zu, faces: %zu\n", m->num_verts, m->num_faces);
 	printf("min vertex: "); vec3f_print(m->min);
 	printf("max vertex: "); vec3f_print(m->max);
 }

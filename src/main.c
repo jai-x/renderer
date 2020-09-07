@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -38,7 +39,7 @@ render(screen* scrn, model* mdl)
 	screen_set_color(scrn, 0, 0, 0, 255);
 	screen_clear(scrn);
 
-	for (int i = 0; i < mdl->num_faces; i++) {
+	for (size_t i = 0; i < mdl->num_faces; i++) {
 		// fetch face
 		face f = mdl->faces[i];
 
@@ -64,7 +65,8 @@ render(screen* scrn, model* mdl)
 		// negative light intensity means the triangle is invisble/not reachable by light
 		if (t_intensity > 0) {
 			// set color depending on light intensity
-			screen_set_color(scrn, 255 * t_intensity, 255 * t_intensity, 255 * t_intensity, 255);
+			int rgb = (int) (255 * t_intensity);
+			screen_set_color(scrn, rgb, rgb, rgb, 255);
 
 			// draw the triangle
 			screen_draw_triangle(scrn, t0, t1, t2);

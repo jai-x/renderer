@@ -2,12 +2,15 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+
 #include <SDL2/SDL.h>
 
 typedef struct {
-	int w; int h;
-	uint32_t ticks;
+	int w;
+	int h;
 	float* z_buffer;
+
+	uint32_t ticks;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	SDL_Event event;
