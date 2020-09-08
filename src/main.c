@@ -93,7 +93,7 @@ timed_render(screen* scrn, model* mdl)
 
 	// subtract
 	timeval_sub(&start, &end, &elapsed);
-	printf("[render time] elapsed: %lu.%06us\n", elapsed.tv_sec, end.tv_usec);
+	printf("[render time] elapsed: %lu.%06us\n", elapsed.tv_sec, elapsed.tv_usec);
 }
 
 int
