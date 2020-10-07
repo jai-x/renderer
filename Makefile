@@ -2,7 +2,7 @@
 
 EXE = renderer
 LIBS = -lm -lSDL2
-CFLAGS = -std=c99 -Wall -Wextra -Werror -Wconversion -Wpedantic -pedantic-errors -pipe
+CFLAGS = -std=c99 -Wall -Wextra -Wconversion -Wpedantic -pedantic-errors -pipe
 
 SRC_DIR = src
 BUILD_DIR = build
@@ -22,7 +22,7 @@ all: $(BUILD_DIR)/$(EXE)
 
 ### Link ###
 $(BUILD_DIR)/$(EXE): $(OBJS)
-	$(CC) $(LIBS) $(OBJS) -o $(BUILD_DIR)/$(EXE)
+	$(CC) $(LIBS) $(OBJS) -o $(EXE)
 
 ### Build ###
 $(BUILD_DIR)/main.o: $(SRC_DIR)/main.c
@@ -51,5 +51,5 @@ $(BUILD_DIR)/vec3f.o: $(SRC_DIR)/vec3f.c $(SRC_DIR)/vec3f.h
 
 ### Clean ###
 clean:
-	$(RM) $(BUILD_DIR)/$(EXE)
+	$(RM) $(EXE)
 	$(RM) $(OBJS)
