@@ -2,8 +2,13 @@
 
 #include <stddef.h>
 
-#include "face.h"
 #include "vec3f.h"
+
+typedef struct {
+	int v0, vt0, vn0;
+	int v1, vt1, vn1;
+	int v2, vt2, vn2;
+} face;
 
 typedef struct {
 	vec3f  min, max;

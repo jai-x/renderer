@@ -21,7 +21,7 @@ static const vec3f light_direction = {0, 0, -1};
 // Since we are currently only doing a simple 2D orthographic projection without
 // considering perspective, this operation does not affect the z axis at all.
 // Since the output vec3f is expected in screen space, the resultant coordinates
-// must be converted to integers.
+// must be integer values.
 static inline vec3f
 model_to_screen(screen* scrn, model* mdl, vec3f v)
 {

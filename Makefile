@@ -9,7 +9,6 @@ BUILD_DIR = build
 
 OBJS = \
 	$(BUILD_DIR)/main.o \
-	$(BUILD_DIR)/face.o \
 	$(BUILD_DIR)/model.o \
 	$(BUILD_DIR)/screen.o \
 	$(BUILD_DIR)/screen_draw.o \
@@ -26,9 +25,6 @@ $(BUILD_DIR)/$(EXE): $(OBJS)
 
 ### Build ###
 $(BUILD_DIR)/main.o: $(SRC_DIR)/main.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(BUILD_DIR)/face.o: $(SRC_DIR)/face.c $(SRC_DIR)/face.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/model.o: $(SRC_DIR)/model.c $(SRC_DIR)/model.h

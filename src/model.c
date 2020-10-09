@@ -6,7 +6,6 @@
 
 #include "model.h"
 #include "vec3f.h"
-#include "face.h"
 
 #define LINE_SIZE 100
 
@@ -21,15 +20,17 @@ is_vertex_line(const char* line)
 	return (line[0] == 'v') && (line[1] == ' ');
 }
 
-static inline void
-parse_vertex_line(model* m, const char* line, size_t pos) {
-	// start parsing after the "v " prefix
-	vec3f v = vec3f_from_line(&line[2]);
-	// assign the vertex and increment position
-	m->verts[pos] = v;
-	// Update minimum and maximum values
-	m->min = vec3f_min(m->min, v);
-	m->max = vec3f_max(m->max, v);
+// Parses string containing vertex info `line` and returns the resultant struct
+static inline vec3f
+parse_vertex_line(const char* line) {
+	// start parsing after the "f " prefix
+	char* pos = (char*) (line + 2);
+
+	vec3f out;
+	out.x = strtof(pos, &pos);
+	out.y = strtof(pos, &pos);
+	out.z = strtof(pos, NULL);
+	return out;
 }
 
 // Returns true if line has prefix "f "
@@ -43,13 +44,50 @@ is_face_line(const char* line)
 	return (line[0] == 'f') && (line[1] == ' ');
 }
 
-static inline void
-parse_face_line(model* m, const char* line, size_t pos)
+// Parses an integer triple in four possible forms and returns how far along the
+// input string has been parsed
+// The four possible forms:
+// 1 `v`
+// 2 `v/vt`
+// 3 `v/vt/vn`
+// 4 `v//vn`
+static size_t
+parse_int_triple(const char* triple, int* v, int* vt, int* vn)
 {
-	// start parsing after the "f " prefix
-	m->faces[pos] = face_from_line(&line[2]);
+	char* pos = (char*) triple;
+
+	*v = (int) strtol(pos, &pos, 10);            // Parse `v` as in form 1
+	if (pos[0] == '/' && pos[1] == '/') {        // Double slash indicates form 4
+		pos += 2;                                // Skip to after the slash
+		*vn = (int) strtol(pos, &pos, 10);       // Parse `vn` and end
+	} else if (pos[0] == '/' && pos[1] != '/') { // Single slash is form 2 or 3
+		pos += 1;                                // Skip slash
+		*vt = (int) strtol(pos, &pos, 10);       // Parse `vt and end if form 2
+		if (pos[0] == '/') {                     // Another single slash is form 3
+			pos += 1;                            // Skip slash
+			*vn = (int) strtol(pos, &pos, 10);   // Parse `vn` and end
+		}
+	}
+
+	// Find how far along the triple string we have moved
+	return (size_t) (pos - triple);
 }
 
+// Parses string containing face info `line` and return the resultant struct
+static inline face
+parse_face_line(const char* line)
+{
+	face out;
+	// start parsing after the "f " prefix
+	size_t offset = 2;
+
+	// A face line is made up of three integer triples
+	offset += parse_int_triple(&line[offset], &out.v0, &out.vt0, &out.vn0);
+	offset += parse_int_triple(&line[offset], &out.v1, &out.vt1, &out.vn1);
+	offset += parse_int_triple(&line[offset], &out.v2, &out.vt2, &out.vn2);
+
+	return out;
+}
 
 // Open a file from filename and parse as wavefront object file and allocate
 // model structures to contain model features.
@@ -99,13 +137,19 @@ model_alloc(const char* filename)
 	while (fgets(line, LINE_SIZE, model_file)) {
 		// line represents model vertex
 		if (is_vertex_line(line)) {
-			parse_vertex_line(out, line, v_pos++);
+			vec3f v = parse_vertex_line(line);
+			// assign the vertex and increment position
+			out->verts[v_pos++] = v;
+			// Update minimum and maximum values
+			out->min = vec3f_min(out->min, v);
+			out->max = vec3f_max(out->max, v);
 			continue;
 		}
 
 		// line represents model face
 		if (is_face_line(line)) {
-			parse_face_line(out, line, f_pos++);
+			// assign the face and increment position
+			out->faces[f_pos++] = parse_face_line(line);
 			continue;
 		}
 	}
