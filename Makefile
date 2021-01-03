@@ -21,7 +21,7 @@ all: $(BUILD_DIR)/$(EXE)
 
 ### Link ###
 $(BUILD_DIR)/$(EXE): $(OBJS)
-	$(CC) $(LIBS) $(OBJS) -o $(EXE)
+	$(CC) $(LIBS) $(OBJS) -o $@
 
 ### Build ###
 $(BUILD_DIR)/main.o: $(SRC_DIR)/main.c
