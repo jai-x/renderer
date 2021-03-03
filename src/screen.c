@@ -1,89 +1,75 @@
 #include <stdbool.h>
+#include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include <assert.h>
-
-#include <SDL2/SDL.h>
+#include <float.h>
 
 #include "screen.h"
-
-static const uint32_t target_delta = 1000 / 30; // 30 fps
+#include "stb/stb_image_write.h"
 
 screen*
-screen_alloc(int w, int h, const char* title)
+screen_alloc(int w, int h)
 {
 	screen* s = malloc(sizeof(screen));
 
-	SDL_Init(SDL_INIT_VIDEO);
+	// screen size
+	s->w = w;
+	s->h = h;
 
-	s->window = SDL_CreateWindow(
-		title,                  // window title
-		SDL_WINDOWPOS_CENTERED, // window x position
-		SDL_WINDOWPOS_CENTERED, // window y position
-		w,                      // window width
-		h,                      // window height
-		SDL_WINDOW_SHOWN        // window flags
-	);
+	// set intial color
+	s->r = 0;
+	s->g = 0;
+	s->b = 0;
+	s->a = 255;
 
-	// create software renderer that outputs directly to the window surface
-	s->renderer = SDL_CreateSoftwareRenderer(SDL_GetWindowSurface(s->window));
+	// allocate buffer
+	s->buffer = calloc((size_t)(s->w * s->h), sizeof(pixel));
 
-	// get real height and width from renderer size
-	SDL_GetRendererOutputSize(s->renderer, &s->w, &s->h);
-
-	// allocate z buffer based on screen size
+	// allocate z buffer
 	s->z_buffer = calloc((size_t)(s->w * s->h), sizeof(float));
 
-	// get initial ticks
-	s->ticks = SDL_GetTicks();
+	screen_clear(s);
 
 	return s;
 }
 
 void
-screen_free(screen* s)
+screen_write_tga(screen* s, const char* filename)
 {
-	SDL_DestroyRenderer(s->renderer);
-	SDL_DestroyWindow(s->window);
-	SDL_Quit();
-
-	free(s->z_buffer);
-
-	s->z_buffer = NULL;
-	s->renderer = NULL;
-	s->window = NULL;
-
-	free(s);
+	stbi_flip_vertically_on_write(1);
+	stbi_write_tga(filename, s->w, s->h, sizeof(pixel), s->buffer);
 }
 
-screen_event
-screen_check_events(screen* s)
+void
+screen_write_png(screen* s, const char* filename)
 {
-	if (SDL_PollEvent(&s->event)) {
-		if (s->event.type == SDL_QUIT) {
-			return SCREEN_QUIT;
-		}
+	stbi_flip_vertically_on_write(1);
+	stbi_write_png(filename, s->w, s->h, sizeof(pixel), s->buffer, (s->w * (int)sizeof(pixel)));
+}
 
-		if (s->event.type == SDL_KEYDOWN) {
-			// r key to redraw
-			if (s->event.key.keysym.sym == SDLK_r) {
-				return SCREEN_REDRAW;
-			}
+void
+screen_free(screen* s)
+{
+	free(s->buffer);
+	free(s->z_buffer);
 
-			// q key to quit
-			if (s->event.key.keysym.sym == SDLK_q) {
-				return SCREEN_QUIT;
-			}
-		}
-	}
+	s->buffer = NULL;
+	s->z_buffer = NULL;
 
-	return SCREEN_CONTINUE;
+	free(s);
 }
 
 void
 screen_clear(screen* s)
 {
-	SDL_RenderClear(s->renderer);
+	// set buffer to current color
+	for (int i = 0; i < (s->w * s->h); i++) {
+		s->buffer[i][0] = s->r;
+		s->buffer[i][1] = s->g;
+		s->buffer[i][2] = s->b;
+		s->buffer[i][3] = s->a;
+	}
 
 	// set z_buffer to be smallest floating point value
 	for (int i = 0; i < (s->w * s->h); i++) {
@@ -92,54 +78,42 @@ screen_clear(screen* s)
 }
 
 void
-screen_present(screen* s)
-{
-	// Since the renderer was created with `SDL_CreateSoftwareRenderer` we
-	// call `SDL_UpdateWindowSurface()` instead of `SDL_RenderPresent` as the
-	// SDL_Renderer in software mode has already made the changes to the window
-	// surface, so we just need to window to present the suface changes to the
-	// framebuffer
-	SDL_UpdateWindowSurface(s->window);
-
-	// Add delay if rendering faster than the target delta
-	uint32_t delta = SDL_GetTicks() - s->ticks;
-	if (delta < target_delta) {
-		SDL_Delay(target_delta - delta);
-	}
-
-	// Update ticks for the next round of rendering
-	s->ticks = SDL_GetTicks();
-}
-
-void
 screen_set_color(screen* s, int r, int g, int b, int a)
 {
-	SDL_SetRenderDrawColor(s->renderer, (uint8_t) r, (uint8_t) g, (uint8_t) b, (uint8_t) a);
+	s->r = (unsigned char) r;
+	s->g = (unsigned char) g;
+	s->b = (unsigned char) b;
+	s->a = (unsigned char) a;
+}
+
+static inline int
+idx(screen* s, int x, int y)
+{
+	// OOB check
+	assert((x >= 0) && (y >= 0) && (x <= s->w) && (y <= s->h));
+
+	return (x + (y * s->w));
 }
 
 void
 screen_set_point(screen* s, int x, int y)
 {
-	// OOB check
-	assert((x >= 0) && (y >= 0) && (x <= s->w) && (y <= s->h));
+	int pxl = idx(s, x, y);
 
-	SDL_RenderDrawPoint(s->renderer, x, y);
+	s->buffer[pxl][0] = s->r;
+	s->buffer[pxl][1] = s->g;
+	s->buffer[pxl][2] = s->b;
+	s->buffer[pxl][3] = s->a;
 }
 
 float
 screen_get_z(screen* s, int x, int y)
 {
-	// OOB check
-	assert((x >= 0) && (y >= 0) && (x <= s->w) && (y <= s->h));
-
-	return s->z_buffer[x + (y * s->w)];
+	return s->z_buffer[idx(s, x, y)];
 }
 
 void
 screen_set_z(screen* s, int x, int y, float z)
 {
-	// OOB check
-	assert((x >= 0) && (y >= 0) && (x <= s->w) && (y <= s->h));
-
-	s->z_buffer[x + (y * s->w)] = z;
+	s->z_buffer[idx(s, x, y)] = z;
 }

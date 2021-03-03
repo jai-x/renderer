@@ -3,19 +3,19 @@
 An experiment in software rendering to teach me more about it. Based on
 ssloy/tinyrenderer but adapted and written in C99.
 
-![screenshot of renderer rendering a teapot](./renderer_screenshot.png)
+![the utah teapot rendered using this renderer](./teapot.png)
 
 ## todo
 
-- [ ] Remove SDL2 and go back to using raw PPM images
-- [ ] Fix inverted Y axis from OBJ file parsing
+- [x] Remove SDL2 and go back to using raw PPM images
+- [x] Fix inverted Y axis from OBJ file parsing
 - [ ] Implement full OBJ file parsing rather than just a subset
 - [ ] Texturing
 - [ ] Perspective projection
 
 ## requirements
 
-Tested to work on MacOS and Linux. Requires SDL2 to be installed
+Tested to work on MacOS and Linux.
 
 ## build and run
 

@@ -1,7 +1,7 @@
 .PHONY: clean
 
 EXE = renderer
-LIBS = -lm -lSDL2
+LIBS = -lm
 CFLAGS = -std=c99 -Wall -Wextra -Wconversion -Wpedantic -pedantic-errors -pipe
 
 SRC_DIR = src
@@ -14,7 +14,8 @@ OBJS = \
 	$(BUILD_DIR)/screen_draw.o \
 	$(BUILD_DIR)/util.o \
 	$(BUILD_DIR)/vec2i.o \
-	$(BUILD_DIR)/vec3f.o
+	$(BUILD_DIR)/vec3f.o \
+	$(BUILD_DIR)/stb_image_write.o
 
 ### Main ###
 all: $(BUILD_DIR)/$(EXE)
@@ -44,6 +45,9 @@ $(BUILD_DIR)/vec2i.o: $(SRC_DIR)/vec2i.c $(SRC_DIR)/vec2i.h
 
 $(BUILD_DIR)/vec3f.o: $(SRC_DIR)/vec3f.c $(SRC_DIR)/vec3f.h
 	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/stb_image_write.o: $(SRC_DIR)/stb/stb_image_write.c $(SRC_DIR)/stb/stb_image_write.h
+	$(CC) -c $< -o $@
 
 ### Clean ###
 clean:

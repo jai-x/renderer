@@ -11,6 +11,7 @@
 #include "util.h"
 #include "screen.h"
 #include "screen_draw.h"
+#include "stb/stb_image_write.h"
 
 static const vec3f light_direction = {0, 0, -1};
 
@@ -35,10 +36,6 @@ model_to_screen(screen* scrn, model* mdl, vec3f v)
 static inline void
 render(screen* scrn, model* mdl)
 {
-	// clear screen to black
-	screen_set_color(scrn, 0, 0, 0, 255);
-	screen_clear(scrn);
-
 	for (size_t i = 0; i < mdl->num_faces; i++) {
 		// fetch face
 		face f = mdl->faces[i];
@@ -101,24 +98,11 @@ int
 main(void)
 {
 	model* teapot = model_alloc("./obj/teapot.obj");
-	screen* scrn = screen_alloc(800, 600, "renderer");
+	screen* scrn = screen_alloc(800, 600);
 
-	// intial render
 	timed_render(scrn, teapot);
 
-	while (true) {
-		screen_event e = screen_check_events(scrn);
-
-		if (e == SCREEN_QUIT) {
-			break;
-		}
-
-		if (e == SCREEN_REDRAW) {
-			timed_render(scrn, teapot);
-		}
-
-		screen_present(scrn);
-	}
+	screen_write_png(scrn, "teapot.png");
 
 	screen_free(scrn);
 	model_free(teapot);
