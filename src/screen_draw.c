@@ -56,7 +56,7 @@ screen_draw_triangle(screen* scrn, vec3f a, vec3f b, vec3f c)
 {
 	// Iteratively the find the bottom left corner of the minimum bounding box
 	// surrounding the triangle in screen space
-	vec3f box_min = {scrn->w - 1, scrn->h - 1, 0};
+	vec3f box_min = {(float) (scrn->w - 1), (float) (scrn->h - 1), 0};
 	box_min = vec3f_min(box_min, a);
 	box_min = vec3f_min(box_min, b);
 	box_min = vec3f_min(box_min, c);

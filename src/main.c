@@ -27,8 +27,8 @@ static inline vec3f
 model_to_screen(screen* scrn, model* mdl, vec3f v)
 {
 	return (vec3f) {
-		(int) a_map(v.x, mdl->min.x, mdl->max.x, 0, scrn->w),
-		(int) a_map(v.y, mdl->min.y, mdl->max.y, 0, scrn->h),
+		(int) a_map(v.x, mdl->min.x, mdl->max.x, 0, (float) scrn->w),
+		(int) a_map(v.y, mdl->min.y, mdl->max.y, 0, (float) scrn->h),
 		v.z
 	};
 }
