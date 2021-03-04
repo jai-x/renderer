@@ -11,7 +11,6 @@
 #include "util.h"
 #include "screen.h"
 #include "screen_draw.h"
-#include "stb/stb_image_write.h"
 
 static const vec3f light_direction = {0, 0, -1};
 

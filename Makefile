@@ -47,7 +47,7 @@ $(BUILD_DIR)/vec3f.o: $(SRC_DIR)/vec3f.c $(SRC_DIR)/vec3f.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/stb_image_write.o: $(SRC_DIR)/stb/stb_image_write.c $(SRC_DIR)/stb/stb_image_write.h
-	$(CC) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 ### Clean ###
 clean:
