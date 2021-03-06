@@ -44,6 +44,12 @@ is_face_line(const char* line)
 	return (line[0] == 'f') && (line[1] == ' ');
 }
 
+static inline int
+strtoi(const char* restrict str, char** restrict endptr, int base)
+{
+	return (int) strtol(str, endptr, base);
+}
+
 // Parses an integer triple in four possible forms and returns how far along the
 // input string has been parsed
 // The four possible forms:
@@ -56,16 +62,23 @@ parse_int_triple(const char* triple, int* v, int* vt, int* vn)
 {
 	char* pos = (char*) triple;
 
-	*v = (int) strtol(pos, &pos, 10);            // Parse `v` as in form 1
+	*v = strtoi(pos, &pos, 10);                  // Parse `v` as in form 1
+
 	if (pos[0] == '/' && pos[1] == '/') {        // Double slash indicates form 4
+
 		pos += 2;                                // Skip to after the slash
-		*vn = (int) strtol(pos, &pos, 10);       // Parse `vn` and end
+		*vn = strtoi(pos, &pos, 10);             // Parse `vn` and end
+
 	} else if (pos[0] == '/' && pos[1] != '/') { // Single slash is form 2 or 3
+
 		pos += 1;                                // Skip slash
-		*vt = (int) strtol(pos, &pos, 10);       // Parse `vt and end if form 2
+		*vt = strtoi(pos, &pos, 10);             // Parse `vt and end if form 2
+
 		if (pos[0] == '/') {                     // Another single slash is form 3
+
 			pos += 1;                            // Skip slash
-			*vn = (int) strtol(pos, &pos, 10);   // Parse `vn` and end
+			*vn = strtoi(pos, &pos, 10);         // Parse `vn` and end
+
 		}
 	}
 
@@ -135,6 +148,7 @@ model_alloc(const char* filename)
 
 	// Parse and construct vertexes and faces
 	while (fgets(line, LINE_SIZE, model_file)) {
+
 		// line represents model vertex
 		if (is_vertex_line(line)) {
 			vec3f v = parse_vertex_line(line);
