@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <math.h>
 
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -26,8 +27,8 @@ static inline vec3f
 model_to_screen(screen* scrn, model* mdl, vec3f v)
 {
 	return (vec3f) {
-		(int) a_map(v.x, mdl->min.x, mdl->max.x, 0, (float) scrn->w),
-		(int) a_map(v.y, mdl->min.y, mdl->max.y, 0, (float) scrn->h),
+		floorf( a_map(v.x, mdl->min.x, mdl->max.x, 0, (float) scrn->w) ),
+		floorf( a_map(v.y, mdl->min.y, mdl->max.y, 0, (float) scrn->h) ),
 		v.z
 	};
 }
@@ -90,7 +91,7 @@ timed_render(screen* scrn, model* mdl)
 	// subtract
 	timeval_sub(&start, &end, &elapsed);
 
-	debug("time elapsed: %lu.%06us\n", elapsed.tv_sec, elapsed.tv_usec);
+	debug("time elapsed: %lu.%06lus\n", elapsed.tv_sec, elapsed.tv_usec);
 }
 
 int
